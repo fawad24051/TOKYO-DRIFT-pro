@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 5615306}
   - component: {fileID: 5615304}
   - component: {fileID: 5615303}
+  - component: {fileID: 5615308}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -251,13 +252,29 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5615302}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.016747221, y: -0.9816299, z: 0.10287234, w: -0.15981126}
-  m_LocalPosition: {x: -156.34, y: 9.32, z: 186.43}
-  m_LocalScale: {x: 0.42857146, y: 0.42857146, z: 0.42857146}
+  m_LocalRotation: {x: -0.046497308, y: 0.07012806, z: -0.021650085, w: -0.9962185}
+  m_LocalPosition: {x: 0.14613295, y: 1.4011257, z: -30.599493}
+  m_LocalScale: {x: 0.42857155, y: 0.42857155, z: 0.42857146}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 30024020}
   m_LocalEulerAnglesHint: {x: 11.965199, y: 521.5065, z: -0.0001}
+--- !u!114 &5615308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5615302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8639a3a42f8ab4a42b594b8a7cbfcd54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceleration: 1500
+  steeringAngle: 30
+  brakeForce: 3000
+  maxSpeed: 20
 --- !u!1 &10247882
 GameObject:
   m_ObjectHideFlags: 0
@@ -1039,6 +1056,7 @@ GameObject:
   - component: {fileID: 30024019}
   - component: {fileID: 30024022}
   - component: {fileID: 30024021}
+  - component: {fileID: 30024023}
   m_Layer: 0
   m_Name: BMW_prefab
   m_TagString: Untagged
@@ -1080,6 +1098,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5615307}
   - {fileID: 2121707809}
   - {fileID: 357552644}
   - {fileID: 1661389294}
@@ -1141,6 +1160,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &30024023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30024018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8639a3a42f8ab4a42b594b8a7cbfcd54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  acceleration: 1500
+  steeringAngle: 30
+  brakeForce: 3000
+  maxSpeed: 20
 --- !u!1001 &37854293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57576,6 +57611,5 @@ SpriteRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 5615307}
   - {fileID: 1628624562}
   - {fileID: 30024020}
