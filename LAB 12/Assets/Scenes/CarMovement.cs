@@ -4,168 +4,6 @@ using UnityEngine;
 public class KeyboardInput : MonoBehaviour
 {
     public float moveSpeed = 5f; // Movement speed
-    public float raycastDistance = 2.0f; // Increased raycast distance for bumps
-    public float hoverHeight = 0.7f; // Adjust hover height above the road
-    public LayerMask trackLayer; // Layer mask to identify the track
-
-    private Rigidbody rb;
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ; // Prevent tipping
-    }
-
-    void Update()
-    {
-        // Movement and rotation
-        Vector3 forwardMovement = Vector3.zero;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            forwardMovement += transform.forward * moveSpeed * Time.deltaTime;
-            Debug.Log("W key is held down");
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            forwardMovement -= transform.forward * moveSpeed * Time.deltaTime;
-            Debug.Log("S key is held down");
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Rotate(Vector3.up, -moveSpeed * 2f * Time.deltaTime); // Rotate left
-            Debug.Log("A key is held down");
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(Vector3.up, moveSpeed * 2f * Time.deltaTime); // Rotate right
-            Debug.Log("D key is held down");
-        }
-
-        // Apply movement
-        rb.MovePosition(rb.position + forwardMovement);
-
-        // Align the car to the track
-        AlignToTrack();
-    }
-
-    void AlignToTrack()
-    {
-        // Cast a ray downward from above the car to detect the road
-        Ray ray = new Ray(transform.position + Vector3.up, Vector3.down);
-        RaycastHit hit;
-
-        // Debug ray visualization
-        Debug.DrawRay(transform.position + Vector3.up, Vector3.down * raycastDistance, Color.red);
-
-        if (Physics.Raycast(ray, out hit, raycastDistance, trackLayer))
-        {
-            // Adjust car's position to maintain hover height
-            Vector3 targetPosition = hit.point + Vector3.up * hoverHeight;
-            rb.MovePosition(new Vector3(rb.position.x, targetPosition.y, rb.position.z));
-        }
-    }
-}
-*/
-
-/*
-using UnityEngine;
-
-public class KeyboardInput : MonoBehaviour
-{
-    // Movement speed
-    public float moveSpeed = 5f;
-
-    void Update()
-    {
-        // Detect specific key press
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Space key pressed");
-        }
-
-        // Check if W key is held down (Move Forward)
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-            Debug.Log("W key is held down");
-        }
-
-        // Check if S key is held down (Move Backward)
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector3.back * moveSpeed * Time.deltaTime);
-            Debug.Log("S key is held down");
-        }
-
-        // Check if A key is held down (Move Left)
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
-            Debug.Log("A key is held down");
-        }
-
-        // Check if D key is held down (Move Right)
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
-            Debug.Log("D key is held down");
-        }
-
-        // Check if W key was released
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            Debug.Log("W key released");
-        }
-    }
-}
-*/
-
-/*
-using UnityEngine;
-
-public class KeyboardInput : MonoBehaviour
-{
-    public float moveSpeed = 5f; // Movement speed
-    public float turnSpeed = 50f; // Rotation speed
-
-    void Update()
-    {
-        // Movement logic
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-            Debug.Log("W key is held down");
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector3.back * moveSpeed * Time.deltaTime);
-            Debug.Log("S key is held down");
-        }
-
-        // Add rotation when turning
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Rotate(Vector3.up, -turnSpeed * Time.deltaTime); // Rotate left
-            Debug.Log("A key is held down");
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(Vector3.up, turnSpeed * Time.deltaTime); // Rotate right
-            Debug.Log("D key is held down");
-        }
-    }
-}
-*/
-
-
-using UnityEngine;
-
-public class KeyboardInput : MonoBehaviour
-{
-    public float moveSpeed = 5f; // Movement speed
     public float turnSpeed = 50f; // Rotation speed
 
     void Update()
@@ -197,3 +35,224 @@ public class KeyboardInput : MonoBehaviour
         }
     }
 }
+*/
+
+
+/*
+using UnityEngine;
+
+public class CarMovement : MonoBehaviour
+{
+    public float moveSpeed = 5f;       // Movement speed
+    public float steeringAngle = 30f; // Maximum steering angle
+    public float maxSpeed = 20f;      // Maximum speed limit
+    private float currentSteerAngle;  // Current steering angle
+    private Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.centerOfMass = Vector3.zero; // Adjust the center of mass to improve stability
+    }
+
+    void Update()
+    {
+        // Get input for forward/backward movement and steering
+        float moveInput = Input.GetAxis("Vertical");    // W/S or Up/Down Arrow
+        float steerInput = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
+
+        // Move the car forward/backward
+        MoveCar(moveInput);
+
+        // Rotate/steer the car
+        SteerCar(steerInput);
+
+        // Limit the car's speed
+        LimitSpeed();
+    }
+
+    private void MoveCar(float moveInput)
+    {
+        // Translate the car forward/backward
+        transform.Translate(Vector3.forward * moveInput * moveSpeed * Time.deltaTime);
+    }
+
+    private void SteerCar(float steerInput)
+    {
+        // Calculate the steering angle based on input
+        currentSteerAngle = steeringAngle * steerInput;
+
+        // Rotate the car around its local Y-axis for steering
+        transform.Rotate(0f, currentSteerAngle * Time.deltaTime, 0f);
+    }
+
+    private void LimitSpeed()
+    {
+        // Limit the velocity to prevent exceeding maxSpeed
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * maxSpeed;
+        }
+    }
+}
+*/
+
+using UnityEngine;
+
+public class CarMovement : MonoBehaviour
+{
+    public float moveSpeed = 5f;       // Movement speed
+    public float steeringAngle = 30f; // Maximum steering angle
+    public float rotationSpeed = 2f;  // Smooth rotation speed for turning
+    public float maxSpeed = 20f;      // Maximum speed limit
+    private float currentSteerAngle;  // Current steering angle
+    private Rigidbody rb;             // Rigidbody for physics-based movement
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.centerOfMass = Vector3.zero; // Adjust center of mass for stability
+    }
+
+    void Update()
+    {
+        // Get input for movement and steering
+        float moveInput = 0f;
+        if (Input.GetKey(KeyCode.W))
+        {
+            moveInput = 1f; // Forward
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            moveInput = -1f; // Backward
+        }
+
+        float steerInput = 0f;
+        if (Input.GetKey(KeyCode.A))
+        {
+            steerInput = -1f; // Turn left
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            steerInput = 1f; // Turn right
+        }
+
+        // Move and steer the car
+        MoveCar(moveInput);
+        SteerCar(steerInput);
+
+        // Limit the car's speed
+        LimitSpeed();
+    }
+
+    private void MoveCar(float moveInput)
+    {
+        // Move forward/backward relative to the car's forward direction
+        transform.Translate(Vector3.forward * moveInput * moveSpeed * Time.deltaTime);
+    }
+
+    private void SteerCar(float steerInput)
+    {
+        // Calculate the desired steering angle
+        currentSteerAngle = steerInput * steeringAngle;
+
+        // Smoothly rotate the car towards the target steering angle
+        Quaternion targetRotation = Quaternion.Euler(0f, currentSteerAngle, 0f) * transform.rotation;
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    private void LimitSpeed()
+    {
+        // Limit velocity to the maximum speed
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * maxSpeed;
+        }
+    }
+}
+
+
+/*
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CarController : MonoBehaviour
+{
+    private float horizontalInput, verticalInput;
+    private float currentSteerAngle, currentbreakForce;
+    private bool isBreaking;
+
+    // Settings
+    [SerializeField] private float motorForce, breakForce, maxSteerAngle;
+
+    // Wheel Colliders
+    [SerializeField] private WheelCollider frontLeftWheelCollider, frontRightWheelCollider;
+    [SerializeField] private WheelCollider rearLeftWheelCollider, rearRightWheelCollider;
+
+    // Wheels
+    [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform;
+    [SerializeField] private Transform rearLeftWheelTransform, rearRightWheelTransform;
+
+    private void FixedUpdate()
+    {
+        GetInput();
+        HandleMotor();
+        HandleSteering();
+        UpdateWheels();
+    }
+
+    private void GetInput()
+    {
+        // Steering Input
+        horizontalInput = Input.GetAxis("Horizontal");
+
+        // Acceleration Input
+        verticalInput = Input.GetAxis("Vertical");
+
+        // Breaking Input
+        isBreaking = Input.GetKey(KeyCode.Space);
+    }
+
+    private void HandleMotor()
+    {
+        frontLeftWheelCollider.motorTorque = verticalInput * motorForce;
+        frontRightWheelCollider.motorTorque = verticalInput * motorForce;
+        currentbreakForce = isBreaking ? breakForce : 0f;
+        ApplyBreaking();
+    }
+
+    private void ApplyBreaking()
+    {
+        frontRightWheelCollider.brakeTorque = currentbreakForce;
+        frontLeftWheelCollider.brakeTorque = currentbreakForce;
+        rearLeftWheelCollider.brakeTorque = currentbreakForce;
+        rearRightWheelCollider.brakeTorque = currentbreakForce;
+    }
+
+    private void HandleSteering()
+    {
+        currentSteerAngle = maxSteerAngle * horizontalInput;
+        frontLeftWheelCollider.steerAngle = currentSteerAngle;
+        frontRightWheelCollider.steerAngle = currentSteerAngle;
+    }
+
+    private void UpdateWheels()
+    {
+        UpdateSingleWheel(frontLeftWheelCollider, frontLeftWheelTransform);
+        UpdateSingleWheel(frontRightWheelCollider, frontRightWheelTransform);
+        UpdateSingleWheel(rearRightWheelCollider, rearRightWheelTransform);
+        UpdateSingleWheel(rearLeftWheelCollider, rearLeftWheelTransform);
+    }
+
+    private void UpdateSingleWheel(WheelCollider wheelCollider, Transform wheelTransform)
+    {
+        Vector3 pos;
+        Quaternion rot;
+        wheelCollider.GetWorldPose(out pos, out rot);
+        wheelTransform.rotation = rot;
+        wheelTransform.position = pos;
+    }
+}
+*/
