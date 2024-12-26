@@ -1,15 +1,17 @@
-//using UnityEngine;
+//using unityengine;
 
-//public class CoinScore : MonoBehaviour
+//public class coin : monobehaviour
 //{
-//    private void OnTriggerEnter(Collider other)
+//    public int points = 1; // points for collecting the coin
+
+//    private void ontriggerenter(collider other) // lowercase "collider" is correct
 //    {
-//        // Check if the collider is the player
-//        if (other.gameObject.CompareTag("Player"))
+//        // check if the colliding object has the carcontroller script
+//        carcontroller car = other.gameobject.getcomponent<carcontroller>();
+//        if (car != null)
 //        {
-//            Debug.Log("Coin Collected!"); // Log to verify if the collision happens
-//            ScoreManager.sManager.IncreaseScore(1); // Increase the score by 1
-//            Destroy(gameObject); // Destroy the coin after it is collected
+//            car.addscore(points); // update the car's score
+//            destroy(gameobject); // destroy the coin
 //        }
 //    }
 //}
